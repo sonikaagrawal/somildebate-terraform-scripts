@@ -1,3 +1,8 @@
+provider "azurerm" {
+    version = "~>2.0"
+    features {}
+    }
+
 # Create New Resource Group in Azure Subscription
 resource "azurerm_resource_group" "somildebate1" {
     name                = "somildebate1"
@@ -26,6 +31,14 @@ resource "azurerm_subnet" "somildebate1_privsubnet" {
     virtual_network_name=azurerm_virtual_network.somildebate1_vnet1.name
 
 }
+# Create Baston host subnet in existing resource group Azure Subscription
+resource "azurerm_subnet" "AzureBastionSubnet" {
+    name                = "AzureBastionSubnet"
+    address_prefixes       =["10.0.2.0/27"]
+    resource_group_name=azurerm_resource_group.somildebate1.name
+    virtual_network_name=azurerm_virtual_network.somildebate1_vnet1.name
+
+}
 
 # Create New Network Public Security Group in existing resource group Azure Subscription
 resource "azurerm_network_security_group" "somildebate1_pub_nsg" {
@@ -37,7 +50,7 @@ resource "azurerm_network_security_group" "somildebate1_pub_nsg" {
         priority                   = 100
         direction                  = "Inbound"
         access                     = "Allow"
-        protocol                   = "any"
+        protocol                   = "tcp"
         source_port_range          = "*"
         destination_port_range     = "80"
         source_address_prefix      = "*"
@@ -48,7 +61,7 @@ resource "azurerm_network_security_group" "somildebate1_pub_nsg" {
         priority                   = 100
         direction                  = "outbound"
         access                     = "Allow"
-        protocol                   = "any"
+        protocol                   = "tcp"
         source_port_range          = "3000"
         destination_port_range     = "3000"
         source_address_prefix      = "10.0.1.4"
@@ -142,7 +155,7 @@ resource "azurerm_linux_virtual_machine" "webserver" {
     size                  = "Standard_DS1_v2"
 
     os_disk {
-        name              = "myOsDisk"
+        name              = "webOsDisk"
         caching           = "ReadWrite"
         storage_account_type = "Premium_LRS"
     }
@@ -221,7 +234,7 @@ resource "azurerm_linux_virtual_machine" "appserver" {
     size                  = "Standard_DS1_v2"
 
     os_disk {
-        name              = "myOsDisk"
+        name              = "appOsDisk"
         caching           = "ReadWrite"
         storage_account_type = "Premium_LRS"
     }
@@ -246,10 +259,6 @@ resource "azurerm_linux_virtual_machine" "appserver" {
         environment = "somildebate1"
     }
 }
-resource "azurerm_resource_group" "mysqldatabase" {
-  name     = "mysqldatabase"
-  location = "eastus"
-}
 
 resource "azurerm_mysql_server" "mysqldatabase" {
   name                = "mysqldatabase-mysqlserver"
@@ -263,5 +272,4 @@ resource "azurerm_mysql_server" "mysqldatabase" {
   storage_mb = 5120
   version    = "5.7" 
   ssl_enforcement_enabled           = false
-  
 }
