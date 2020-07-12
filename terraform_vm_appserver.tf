@@ -1,11 +1,11 @@
-resource "azurerm_network_interface" "appserver_nic_id" {
+resource "azurerm_network_interface" "appserver_nic" {
     name                        = "appserver_nic"
     location                    = "eastus"
-    resource_group_name         = azurerm_resource_group.somildebate1_id.name
+    resource_group_name         = azurerm_resource_group.somildebate1.name
 
     ip_configuration {
         name                          = "myNicConfiguration"
-        subnet_id                     = azurerm_subnet.somildebate1_privsubnet_id.id
+        subnet_id                     = azurerm_subnet.somildebate1_privsubnet.id
         private_ip_address_allocation = "Static"
         private_ip_address          = "10.0.1.4"
     }
@@ -17,22 +17,22 @@ resource "azurerm_network_interface" "appserver_nic_id" {
 
 # Connect the security group to the network interface
 resource "azurerm_network_interface_security_group_association" "appserver" {
-    network_interface_id      = azurerm_network_interface.appserver_nic_id.id
-    network_security_group_id = azurerm_network_security_group.somildebate1_priv_nsg_id.id
+    network_interface_id      = azurerm_network_interface.appserver_nic.id
+    network_security_group_id = azurerm_network_security_group.somildebate1_priv_nsg.id
 
 }
 
 resource "random_id" "randomId" {
     keepers = {
         # Generate a new ID only when a new resource group is defined
-        resource_group = azurerm_resource_group.somildebate1_id.name
+        resource_group = azurerm_resource_group.somildebate1.name
     }
     
     byte_length = 8
 }
 resource "azurerm_storage_account" "appserver_storage" {
     name                        = "diag${random_id.randomId.hex}"
-    resource_group_name         = azurerm_resource_group.somildebate1_id.name
+    resource_group_name         = azurerm_resource_group.somildebate1.name
     location                    = "eastus"
     account_replication_type    = "LRS"
     account_tier                = "Standard"
@@ -46,8 +46,8 @@ resource "azurerm_storage_account" "appserver_storage" {
 resource "azurerm_linux_virtual_machine" "appserver" {
     name                  = "appserver"
     location              = "eastus"
-    resource_group_name   = azurerm_resource_group.somildebate1_id.name
-    network_interface_ids = [azurerm_network_interface.appserver_nic_id.id]
+    resource_group_name   = azurerm_resource_group.somildebate1.name
+    network_interface_ids = [azurerm_network_interface.appserver_nic.id]
     size                  = "Standard_DS1_v2"
 
     os_disk {

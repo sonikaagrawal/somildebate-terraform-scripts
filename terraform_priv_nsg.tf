@@ -2,9 +2,9 @@ provider "azurerm" {
     version = 1.38
     }
 # Create New Network Private Security Group in existing resource group Azure Subscription
-resource "azurerm_network_security_group" "somildebate1_priv_nsg_id" {
+resource "azurerm_network_security_group" "somildebate1_priv_nsg" {
     name                = "somildebate1_priv_nsg"
-    resource_group_name=azurerm_resource_group.somildebate1_id.name
+    resource_group_name=azurerm_resource_group.somildebate1.name
  location            = "East US"
  security_rule {
         name                       = "port-all"
