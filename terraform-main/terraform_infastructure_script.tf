@@ -277,11 +277,19 @@ resource "azurerm_mysql_server" "mysqldatabase" {
   version    = "5.7" 
   ssl_enforcement_enabled           = false
 }
+data "azurerm_client_config" "current" {}
+
+resource "azurerm_resource_group" "somildebate1" {
+  name     = "somildebate1"
+  location = "East US"
+}
+
 resource "azurerm_key_vault" "mykeyvault" {
   name                        = "mykeyvault"
   location                    = azurerm_resource_group.somildebate1.location
   resource_group_name         = azurerm_resource_group.somildebate1.name
   enabled_for_disk_encryption = true
+  tenant_id                   = data.azurerm_client_config.current.tenant_id
   soft_delete_enabled         = false
   purge_protection_enabled    = false
 
