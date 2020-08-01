@@ -173,8 +173,13 @@ resource "azurerm_linux_virtual_machine" "webserver" {
 
     computer_name  = "webserver"
     admin_username = "azureuser"
-    admin_password = "azureuser123!"
-    disable_password_authentication = false
+    //admin_password = "azureuser123!"
+    disable_password_authentication = true
+    
+    admin_ssh_key {
+        username       = "azureuser"
+        public_key     = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC/tQ5KKXAMs9RiZXmghOi6DRpCXJPi/BT+8Eb7b4TzkTqmLNh9jzwq14/O89RoN5d6d8q25vI/5AaYaeDJWNL64UZGfX1hthZwO9ptamZliSjFbgMGX6mMclWUqcKmPNczc/cnggirZ3L2sH3PR+02yRcgBLX0H4T4+13AfEtqKJsnP+rDYud4AzvG96x5qG2wg0JyGNjNme/z1U2i9IWhmPkKd/Z1rkYcc5QxU0eZjShsDKkhafsWJd4Zv4ab3THNWelH9JulEyB5UpoI77k8uGErTgpthQZgHWni2FXYq3ja4zDZqt72vdkHW7+e9xPVKQ8SgOy0UvK8NBTwV1rYzxbBZLII9RKfvjz93yVVmSBzww4ooLw6iRzDy12TSEpshA1YykQzQh1wNIFf4bfzv4WXCQrGOopsCObWRDu2cB7All6tbCxJzBMQ0F3QE9zCA/IcVCGbK4wol+0TlZXHOy89lqA3UTUNOnyjRmS3VUCwRc+PJ7alWTClmoian8q1QzgI5OyI0sXf+GMvOE/4wh/fPk5xKgc3HV/5g1UMIdjb3k8UmsFGevxcPZULawKc9WAqRTY/TJIZ/T+OldR06N49GZ0TbyPvUJcTB6FYgap3AGilBrwnjKlqR1I620kbVMbLg743rDtS3uuPkn7VgShdbORQe6038TZIxqZdqw== sonika.wl@gmail.com"
+    }
         
     boot_diagnostics {
         storage_account_uri = azurerm_storage_account.webserver_storage.primary_blob_endpoint
@@ -184,7 +189,16 @@ resource "azurerm_linux_virtual_machine" "webserver" {
         environment = "somildebate1"
     }
 }
+resource "azurerm_public_ip" "appserverpublicip" {
+    name                         = "appserverpublicip"
+    location                     = "eastus"
+    resource_group_name          = azurerm_resource_group.somildebate1.name
+    allocation_method            = "Dynamic"
 
+    tags = {
+        environment = "somildebate1"
+    }
+}
 resource "azurerm_network_interface" "appserver_nic" {
     name                        = "appserver_nic"
     location                    = "eastus"
@@ -195,6 +209,7 @@ resource "azurerm_network_interface" "appserver_nic" {
         subnet_id                     = azurerm_subnet.somildebate1_privsubnet.id
         private_ip_address_allocation = "Static"
         private_ip_address          = "10.0.1.4"
+        public_ip_address_id          = azurerm_public_ip.appserverpublicip.id
     }
 
     tags = {
@@ -252,8 +267,13 @@ resource "azurerm_linux_virtual_machine" "appserver" {
 
     computer_name  = "appserver"
     admin_username = "azureuser"
-    admin_password = "azureuser123!"
-    disable_password_authentication = false
+    //admin_password = "azureuser123!"
+    disable_password_authentication = true
+
+    admin_ssh_key {
+        username       = "azureuser"
+        public_key     = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC/tQ5KKXAMs9RiZXmghOi6DRpCXJPi/BT+8Eb7b4TzkTqmLNh9jzwq14/O89RoN5d6d8q25vI/5AaYaeDJWNL64UZGfX1hthZwO9ptamZliSjFbgMGX6mMclWUqcKmPNczc/cnggirZ3L2sH3PR+02yRcgBLX0H4T4+13AfEtqKJsnP+rDYud4AzvG96x5qG2wg0JyGNjNme/z1U2i9IWhmPkKd/Z1rkYcc5QxU0eZjShsDKkhafsWJd4Zv4ab3THNWelH9JulEyB5UpoI77k8uGErTgpthQZgHWni2FXYq3ja4zDZqt72vdkHW7+e9xPVKQ8SgOy0UvK8NBTwV1rYzxbBZLII9RKfvjz93yVVmSBzww4ooLw6iRzDy12TSEpshA1YykQzQh1wNIFf4bfzv4WXCQrGOopsCObWRDu2cB7All6tbCxJzBMQ0F3QE9zCA/IcVCGbK4wol+0TlZXHOy89lqA3UTUNOnyjRmS3VUCwRc+PJ7alWTClmoian8q1QzgI5OyI0sXf+GMvOE/4wh/fPk5xKgc3HV/5g1UMIdjb3k8UmsFGevxcPZULawKc9WAqRTY/TJIZ/T+OldR06N49GZ0TbyPvUJcTB6FYgap3AGilBrwnjKlqR1I620kbVMbLg743rDtS3uuPkn7VgShdbORQe6038TZIxqZdqw== sonika.wl@gmail.com"
+    }
         
     boot_diagnostics {
         storage_account_uri = azurerm_storage_account.appserver_storage.primary_blob_endpoint
