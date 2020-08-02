@@ -290,7 +290,7 @@ resource "azurerm_mysql_server" "mysqldatabase" {
   resource_group_name = azurerm_resource_group.somildebate1.name
 
   administrator_login          = "mysqladmin"
-  administrator_login_password = "Soni2021!"
+  administrator_login_password = "Somildebate123"
 
   sku_name   = "B_Gen5_2"
   storage_mb = 5120
