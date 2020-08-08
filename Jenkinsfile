@@ -17,7 +17,7 @@ pipeline {
              
          }
      }
-//      stage('Provision infrastructure') {
+stage('Provision infrastructure') {
 //          steps {
 //              dir('terraform-main')
 //              {
@@ -27,8 +27,8 @@ pipeline {
 //               sh 'terraform apply plan'
 //              }
 //          }
-//      }
-//    stage('Provision infrastructure-DR') {
+      }
+    stage('Provision infrastructure-DR') {
 //         steps {
 //             dir('terraform-main-DR')
 //             {
@@ -38,7 +38,7 @@ pipeline {
 //              sh 'terraform apply plan'
 //             }
 //         }
-//      }
+      }
  }
 }
 
