@@ -8,30 +8,30 @@ provider "azurerm" {
     }
 
 # Create New Resource Group in Azure Subscription
-resource "azurerm_resource_group" "somildebate1" {
-    name                = "somildebate1"
- location            = "East US"
+resource "azurerm_resource_group" "somildebate1-DR" {
+    name                = "somildebate1-DR"
+ location            = "Central US"
 }
 
 # Create New virtual network in existing resource group Azure Subscription
 resource "azurerm_virtual_network" "somildebate1_vnet1" {
     name                = "somildebate1_vnet1"
     address_space       =["10.0.0.0/16"]
-    resource_group_name=azurerm_resource_group.somildebate1.name
- location            = "East US"
+    resource_group_name=azurerm_resource_group.somildebate1-DR.name
+ location            = "Central US"
 }
 # Create New public subnet in existing resource group Azure Subscription
 resource "azurerm_subnet" "somildebate1_pubsubnet" {
     name                = "somildebate1_pubsubnet"
     address_prefixes       =["10.0.0.0/24"]
-    resource_group_name=azurerm_resource_group.somildebate1.name
+    resource_group_name=azurerm_resource_group.somildebate1-DR.name
     virtual_network_name=azurerm_virtual_network.somildebate1_vnet1.name
 }
 # Create New private subnet in existing resource group Azure Subscription
 resource "azurerm_subnet" "somildebate1_privsubnet" {
     name                = "somildebate1_privsubnet"
     address_prefixes       =["10.0.1.0/24"]
-    resource_group_name=azurerm_resource_group.somildebate1.name
+    resource_group_name=azurerm_resource_group.somildebate1-DR.name
     virtual_network_name=azurerm_virtual_network.somildebate1_vnet1.name
 
 }
@@ -39,7 +39,7 @@ resource "azurerm_subnet" "somildebate1_privsubnet" {
 resource "azurerm_subnet" "AzureBastionSubnet" {
     name                = "AzureBastionSubnet"
     address_prefixes       =["10.0.2.0/27"]
-    resource_group_name=azurerm_resource_group.somildebate1.name
+    resource_group_name=azurerm_resource_group.somildebate1-DR.name
     virtual_network_name=azurerm_virtual_network.somildebate1_vnet1.name
 
 }
@@ -47,8 +47,8 @@ resource "azurerm_subnet" "AzureBastionSubnet" {
 # Create New Network Public Security Group in existing resource group Azure Subscription
 resource "azurerm_network_security_group" "somildebate1_pub_nsg" {
     name                = "somildebate1_pub_nsg"
-    resource_group_name=azurerm_resource_group.somildebate1.name
- location            = "East US"
+    resource_group_name=azurerm_resource_group.somildebate1-DR.name
+ location            = "Central US"
  security_rule {
         name                       = "port-80-inbound"
         priority                   = 100
@@ -77,8 +77,8 @@ resource "azurerm_network_security_group" "somildebate1_pub_nsg" {
 # Create New Network Private Security Group in existing resource group Azure Subscription
 resource "azurerm_network_security_group" "somildebate1_priv_nsg" {
     name                = "somildebate1_priv_nsg"
-    resource_group_name=azurerm_resource_group.somildebate1.name
- location            = "East US"
+    resource_group_name=azurerm_resource_group.somildebate1-DR.name
+ location            = "Central US"
  security_rule {
         name                       = "port-3000-inbound"
         priority                   = 100
@@ -96,19 +96,19 @@ resource "azurerm_network_security_group" "somildebate1_priv_nsg" {
 
 resource "azurerm_public_ip" "webserverpublicip" {
     name                         = "webserverpublicip"
-    location                     = "eastus"
-    resource_group_name          = azurerm_resource_group.somildebate1.name
+    location                     = "centralus"
+    resource_group_name          = azurerm_resource_group.somildebate1-DR.name
     allocation_method            = "Dynamic"
 
     tags = {
-        environment = "somildebate1"
+        environment = "somildebate1-DR"
     }
 }
 
 resource "azurerm_network_interface" "webserver_nic" {
     name                        = "webserver_nic"
-    location                    = "eastus"
-    resource_group_name         = azurerm_resource_group.somildebate1.name
+    location                    = "centralus"
+    resource_group_name         = azurerm_resource_group.somildebate1-DR.name
 
     ip_configuration {
         name                          = "myNicConfiguration"
@@ -119,7 +119,7 @@ resource "azurerm_network_interface" "webserver_nic" {
     }
 
     tags = {
-        environment = "somildebate1"
+        environment = "somildebate1-DR"
     }
 }
 
@@ -133,28 +133,28 @@ resource "azurerm_network_interface_security_group_association" "webserver" {
 resource "random_id" "web_randomId" {
     keepers = {
         # Generate a new ID only when a new resource group is defined
-        resource_group = azurerm_resource_group.somildebate1.name
+        resource_group = azurerm_resource_group.somildebate1-DR.name
     }
     
     byte_length = 8
 }
 resource "azurerm_storage_account" "webserver_storage" {
     name                        = "diag${random_id.web_randomId.hex}"
-    resource_group_name         = azurerm_resource_group.somildebate1.name
-    location                    = "eastus"
+    resource_group_name         = azurerm_resource_group.somildebate1-DR.name
+    location                    = "centralus"
     account_replication_type    = "LRS"
     account_tier                = "Standard"
 
     tags = {
-        environment = "somildebate1"
+        environment = "somildebate1-DR"
     }
 
 }
 
 resource "azurerm_linux_virtual_machine" "webserver" {
     name                  = "webserver"
-    location              = "eastus"
-    resource_group_name   = azurerm_resource_group.somildebate1.name
+    location              = "centralus"
+    resource_group_name   = azurerm_resource_group.somildebate1-DR.name
     network_interface_ids = [azurerm_network_interface.webserver_nic.id]
     size                  = "Standard_DS1_v2"
 
@@ -186,23 +186,23 @@ resource "azurerm_linux_virtual_machine" "webserver" {
     }
 
     tags = {
-        environment = "somildebate1"
+        environment = "somildebate1-DR"
     }
 }
 resource "azurerm_public_ip" "appserverpublicip" {
     name                         = "appserverpublicip"
-    location                     = "eastus"
-    resource_group_name          = azurerm_resource_group.somildebate1.name
+    location                     = "centralus"
+    resource_group_name          = azurerm_resource_group.somildebate1-DR.name
     allocation_method            = "Dynamic"
 
     tags = {
-        environment = "somildebate1"
+        environment = "somildebate1-DR"
     }
 }
 resource "azurerm_network_interface" "appserver_nic" {
     name                        = "appserver_nic"
-    location                    = "eastus"
-    resource_group_name         = azurerm_resource_group.somildebate1.name
+    location                    = "centralus"
+    resource_group_name         = azurerm_resource_group.somildebate1-DR.name
 
     ip_configuration {
         name                          = "myNicConfiguration"
@@ -213,7 +213,7 @@ resource "azurerm_network_interface" "appserver_nic" {
     }
 
     tags = {
-        environment = "somildebate1"
+        environment = "somildebate1-DR"
     }
 }
 
@@ -227,28 +227,28 @@ resource "azurerm_network_interface_security_group_association" "appserver" {
 resource "random_id" "app_randomId" {
     keepers = {
         # Generate a new ID only when a new resource group is defined
-        resource_group = azurerm_resource_group.somildebate1.name
+        resource_group = azurerm_resource_group.somildebate1-DR.name
     }
     
     byte_length = 8
 }
 resource "azurerm_storage_account" "appserver_storage" {
     name                        = "diag${random_id.app_randomId.hex}"
-    resource_group_name         = azurerm_resource_group.somildebate1.name
-    location                    = "eastus"
+    resource_group_name         = azurerm_resource_group.somildebate1-DR.name
+    location                    = "centralus"
     account_replication_type    = "LRS"
     account_tier                = "Standard"
 
     tags = {
-        environment = "somildebate1"
+        environment = "somildebate1-DR"
     }
 
 }
 
 resource "azurerm_linux_virtual_machine" "appserver" {
     name                  = "appserver"
-    location              = "eastus"
-    resource_group_name   = azurerm_resource_group.somildebate1.name
+    location              = "centralus"
+    resource_group_name   = azurerm_resource_group.somildebate1-DR.name
     network_interface_ids = [azurerm_network_interface.appserver_nic.id]
     size                  = "Standard_DS1_v2"
 
@@ -280,14 +280,14 @@ resource "azurerm_linux_virtual_machine" "appserver" {
     }
 
     tags = {
-        environment = "somildebate1"
+        environment = "somildebate1-DR"
     }
 }
 
 resource "azurerm_mysql_server" "mysqldatabase" {
   name                = "mysqldatabase-mysqlserver"
-  location            = azurerm_resource_group.somildebate1.location
-  resource_group_name = azurerm_resource_group.somildebate1.name
+  location            = azurerm_resource_group.somildebate1-DR.location
+  resource_group_name = azurerm_resource_group.somildebate1-DR.name
 
   administrator_login          = "mysqladmin"
   administrator_login_password = "Somildebate123"
