@@ -285,7 +285,7 @@ resource "azurerm_linux_virtual_machine" "appserver" {
 }
 
 resource "azurerm_mysql_server" "mysqldatabase" {
-  name                = "mysqldatabase-mysqlserver"
+  name                = "mysqldatabase-mysqlserver-dr"
   location            = azurerm_resource_group.somildebate1-DR.location
   resource_group_name = azurerm_resource_group.somildebate1-DR.name
 
