@@ -1,10 +1,10 @@
 provider "azurerm" {
     version = "~>2.0"
     features {}
-    subscription_id="934184d3-2f1e-49a6-bff0-d67e2b38d20f"
+    subscription_id="b23c651e-840a-43ec-958d-53b4c0b2434e"
     client_id = "b166df41-957c-4847-a385-3e35e20600c5"
     client_secret= "mias6jZ21FI_7wzZ.iHjzfUp0jTCf-VMDD"
-    tenant_id= "76b05012-db84-411a-937e-0dbd17d88199"
+    tenant_id= "8bf8e13f-c066-4037-a3c2-f65224b6ce20"
     }
 
 # Create New Resource Group in Azure Subscription
