@@ -17,28 +17,28 @@ pipeline {
              
          }
      }
-     stage('Provision infrastructure') {
-         steps {
-             dir('terraform-main')
-             {
-             sh 'terraform init'
-             sh 'terraform plan -out=plan'
-//  		  sh 'terraform destroy -auto-approve'
-              sh 'terraform apply plan'
-             }
-         }
-     }
-   stage('Provision infrastructure-DR') {
-        steps {
-            dir('terraform-main-DR')
-            {
-            sh 'terraform init'
-            sh 'terraform plan -out=plan'
-// 		  sh 'terraform destroy -auto-approve'
-             sh 'terraform apply plan'
-            }
-        }
-     }
+//      stage('Provision infrastructure') {
+//          steps {
+//              dir('terraform-main')
+//              {
+//              sh 'terraform init'
+//              sh 'terraform plan -out=plan'
+	  sh 'terraform destroy -auto-approve'
+//               sh 'terraform apply plan'
+//              }
+//          }
+//      }
+//    stage('Provision infrastructure-DR') {
+//         steps {
+//             dir('terraform-main-DR')
+//             {
+//             sh 'terraform init'
+//             sh 'terraform plan -out=plan'
+	  sh 'terraform destroy -auto-approve'
+//              sh 'terraform apply plan'
+//             }
+//         }
+//      }
  }
 }
 
