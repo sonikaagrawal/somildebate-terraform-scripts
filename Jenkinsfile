@@ -28,7 +28,7 @@ stage('Provision infrastructure') {
 //              }
 //          }
       }
-    stage('Provision infrastructure-DR') {
+ //   stage('Provision infrastructure-DR') {
 //         steps {
 //             dir('terraform-main-DR')
 //             {
@@ -38,7 +38,7 @@ stage('Provision infrastructure') {
 //              sh 'terraform apply plan'
 //             }
 //         }
-      }
+//      }
  }
 }
 
